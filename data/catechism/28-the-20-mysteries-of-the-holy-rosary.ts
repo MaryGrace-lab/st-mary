@@ -1,0 +1,26 @@
+export const title = "The 20 Mysteries of the Holy Rosary & When They are Prayed";
+export const image = "/mysteries.png";
+export const items = [
+  "Joyful: 1. Annunciation",
+  "Joyful: 2. Visitation",
+  "Joyful: 3. Nativity",
+  "Joyful: 4. Presentation",
+  "Joyful: 5. Finding Jesus in the Temple",
+  "Sorrowful: 1. Agony in the Garden",
+  "Sorrowful: 2. The Scourging",
+  "Sorrowful: 3. Crowning with thorns",
+  "Sorrowful: 4. Carrying of the Cross",
+  "Sorrowful: 5. Crucifixion",
+  "Luminous: 1. Baptism of Jesus",
+  "Luminous: 2. Manifestation of Jesus at the wedding feast of Cana",
+  "Luminous: 3. Proclamation of the kingdom of God",
+  "Luminous: 4. The Transfiguration",
+  "Luminous: 5. The institution of the Holy Eucharist",
+  "Glorious: 1. Resurrection",
+  "Glorious: 2. Ascension",
+  "Glorious: 3. Pentecost",
+  "Glorious: 4. Assumption",
+  "Glorious: 5. Crowning of Mary",
+  "Schedule: Mondays – Joyful, Tuesdays – Sorrowful, Wednesdays – Glorious, Thursdays – Luminous, Fridays – Sorrowful, Saturdays – Glorious",
+  "Sundays in Advent, Christmastide & Epiphany: Joyful. Sundays in Eastertide & Time After Pentecost: Glorious. All of Septuagesima & Lent: Sorrowful",
+];

@@ -1,0 +1,74 @@
+// ──────────────────────────────────────────────
+// Prisma Schema – St. Mary Catholic Church
+// Minimal production base + Homilies
+// ──────────────────────────────────────────────
+
+datasource db {
+  provider = "postgresql"           // change to "mysql" etc. if needed
+  // url is defined in prisma.config.ts for Prisma 7+
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Homily {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  youtubeId   String
+  publishedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+  featured    Boolean  @default(false)
+
+  @@index([publishedAt])
+}
+
+model DailyReading {
+  id                 String   @id @default(uuid())
+  date               DateTime @unique
+  liturgicalDay      String?  // e.g., "15th Sunday in Ordinary Time"
+  firstReading       String
+  firstReadingTitle  String
+  responsorialPsalm  String
+  responsorialTitle  String
+  secondReading      String?
+  secondReadingTitle String?
+  gospelAcclamation  String
+  gospelAcclamationVerse String?
+  gospel             String
+  gospelTitle        String
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([date])
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+model MassBooking {
+  id              String        @id @default(uuid())
+  name            String
+  email           String?
+  phone           String
+  intentionType   String
+  location        String
+  bookDate        DateTime
+  massTime        String?
+  namesToPrayFor  String?
+  additionalInfo  String?
+  amount          Float
+  consent         Boolean
+  status          BookingStatus @default(PENDING)
+  reference       String        @unique
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([status])
+  @@index([bookDate])
+}
+

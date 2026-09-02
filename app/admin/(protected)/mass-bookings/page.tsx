@@ -1,9 +1,11 @@
-// app/admin/(protected)/mass-bookings/page.tsx
 import { prisma } from "@/lib/prisma";
 import BookingsList from "./BookingsList";
 
 export default async function AdminMassBookingsPage() {
   const bookings = await prisma.massBooking.findMany({
+    where: {
+      paymentInitiated: true,   // only show after user clicked "I've Made This Payment"
+    },
     orderBy: { createdAt: "desc" },
   });
 

@@ -2,16 +2,23 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Video, LogOut, X } from "lucide-react";
+import {
+  LayoutDashboard,
+  Video,
+  BookOpen,
+  BookOpenCheck,
+  HandCoins,
+  LogOut,
+  X,
+} from "lucide-react";
 import { signOut } from "next-auth/react";
-import { BookOpen } from "lucide-react"; // add this import
-import { BookOpenCheck } from "lucide-react";
 
 const links = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/homilies", label: "Homilies", icon: Video },
   { href: "/admin/readings", label: "Readings", icon: BookOpen },
   { href: "/admin/mass-bookings", label: "Mass Bookings", icon: BookOpenCheck },
+  { href: "/admin/donations", label: "Donations", icon: HandCoins },
 ];
 
 interface AdminSidebarProps {
@@ -24,7 +31,6 @@ export default function AdminSidebar({ open, onClose }: AdminSidebarProps) {
 
   return (
     <>
-      {/* Overlay for mobile */}
       {open && (
         <div
           className="fixed inset-0 z-40 bg-black/50 lg:hidden"
@@ -38,7 +44,6 @@ export default function AdminSidebar({ open, onClose }: AdminSidebarProps) {
           ${open ? "translate-x-0" : "-translate-x-full"}
         `}
       >
-        {/* Logo / close button area */}
         <div className="flex items-center justify-between p-4 border-b border-gray-100">
           <span className="font-bold text-blue-900 text-lg">Admin Panel</span>
           <button

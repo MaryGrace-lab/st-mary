@@ -1,15 +1,11 @@
 // lib/email.ts
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
-const transporter = nodemailer.createTransport({
-  service: "gmail", // use "gmail" if using Gmail, otherwise use "SMTP" with host/port
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
-
+const resend = new Resend(process.env.RESEND_API_KEY);
 const OFFICE_EMAIL = process.env.PARISH_OFFICE_EMAIL!;
+const FROM_EMAIL =
+  process.env.EMAIL_FROM ||
+  "St. Mary Catholic Church <notifications@stmaryobe.org>";
 
 export async function sendEmail({
   subject,
@@ -24,13 +20,19 @@ export async function sendEmail({
   }
 
   try {
-    await transporter.sendMail({
-      from: `"St. Mary Catholic Church" <${process.env.EMAIL_USER}>`,
+    const { data, error } = await resend.emails.send({
+      from: FROM_EMAIL,
       to: OFFICE_EMAIL,
       subject,
       html,
     });
-    return { success: true };
+
+    if (error) {
+      console.error("Resend error:", error);
+      return { success: false, error };
+    }
+
+    return { success: true, id: data?.id };
   } catch (error) {
     console.error("Email send error:", error);
     return { success: false, error };

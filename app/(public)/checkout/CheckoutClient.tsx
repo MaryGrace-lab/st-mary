@@ -4,6 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Loader2, Copy, CheckCircle } from "lucide-react";
 import { markPaymentInitiated } from "@/lib/actions/mass-booking";
+import Link from "next/link";
 
 interface Booking {
   id: string;
@@ -20,9 +21,9 @@ interface Booking {
 
 // ⚠️ Replace with the real church bank details before going live
 const CHURCH_BANK_DETAILS = {
-  bankName: "First Bank",
-  accountName: "St. Mary Catholic Church, Obe Quarter",
-  accountNumber: "1234567890",
+  bankName: "Zenith Bank",
+  accountName: "St. Mary Catholic Church, Obe",
+  accountNumber: "1015256219",
 };
 
 export default function CheckoutClient({ booking }: { booking: Booking }) {
@@ -42,11 +43,26 @@ export default function CheckoutClient({ booking }: { booking: Booking }) {
     }
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    toast.success("Copied!");
+  const copyToClipboard = async (text: string) => {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+        toast.success("Copied!");
+      } else {
+        // Fallback for older browsers / non‑HTTPS (e.g., network IP)
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+        toast.success("Copied!");
+      }
+    } catch (error) {
+      console.error("Copy failed:", error);
+      toast.error("Could not copy. Please copy manually.");
+    }
   };
-
   // After confirmation, show a simple success message
   if (confirmed) {
     return (
@@ -61,12 +77,12 @@ export default function CheckoutClient({ booking }: { booking: Booking }) {
               The parish office will verify your transfer and confirm your booking.
               You will receive a notification once confirmed.
             </p>
-            <a
+            <Link
               href="/"
               className="inline-block bg-blue-900 text-white px-6 py-2 rounded-lg font-medium"
             >
               Return Home
-            </a>
+            </Link>
           </div>
         </div>
       </div>
@@ -155,11 +171,13 @@ export default function CheckoutClient({ booking }: { booking: Booking }) {
                     {CHURCH_BANK_DETAILS.accountNumber}
                   </span>
                   <button
+                    type="button"
                     onClick={() =>
                       copyToClipboard(CHURCH_BANK_DETAILS.accountNumber)
                     }
                     className="text-orange-600 hover:text-orange-800"
                     title="Copy account number"
+                    aria-label="Copy account number"
                   >
                     <Copy className="w-4 h-4" />
                   </button>
@@ -180,9 +198,11 @@ export default function CheckoutClient({ booking }: { booking: Booking }) {
                     {booking.reference}
                   </span>
                   <button
+                    type="button"
                     onClick={() => copyToClipboard(booking.reference)}
                     className="text-orange-600 hover:text-orange-800"
                     title="Copy reference"
+                    aria-label="Copy reference"
                   >
                     <Copy className="w-4 h-4" />
                   </button>

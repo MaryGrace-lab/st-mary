@@ -1,5 +1,7 @@
 "use server";
 
+import { prisma } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
 import { sendEmail } from "@/lib/email";
 
 export async function notifyDonation(data: {
@@ -13,6 +15,18 @@ export async function notifyDonation(data: {
     throw new Error("Name and amount are required.");
   }
 
+  // Save donation to database
+  await prisma.donation.create({
+    data: {
+      name: data.name,
+      email: data.email || null,
+      amount: data.amount,
+      purpose: data.purpose || null,
+      message: data.message || null,
+    },
+  });
+
+  // Send email notification
   await sendEmail({
     subject: `New Donation Notification – ${data.name}`,
     html: `
@@ -27,5 +41,6 @@ export async function notifyDonation(data: {
     `,
   });
 
+  revalidatePath("/admin/donations");
   return { success: true };
 }

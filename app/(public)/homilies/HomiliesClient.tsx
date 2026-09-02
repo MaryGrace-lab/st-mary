@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import HomilyCard from "./HomilyCard";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search } from "lucide-react";
+import { Search, ExternalLink } from "lucide-react";
 
 interface Homily {
   id: string;
@@ -39,7 +39,7 @@ export default function HomiliesClient({ homilies }: { homilies: Homily[] }) {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search homilies..."
+            placeholder="Search recent homilies..."
             className="block w-full pl-12 pr-4 py-3 rounded-xl border border-blue-200 bg-white shadow-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition text-gray-700 placeholder-gray-400"
           />
         </div>
@@ -53,11 +53,13 @@ export default function HomiliesClient({ homilies }: { homilies: Homily[] }) {
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-blue-50 text-blue-900 mb-6">
               <Search className="w-10 h-10" />
             </div>
-            <h3 className="text-2xl font-bold text-blue-900 mb-2">No homilies found</h3>
+            <h3 className="text-2xl font-bold text-blue-900 mb-2">
+              No recent homilies found
+            </h3>
             <p className="text-gray-500">
               {searchQuery
-                ? "Try adjusting your search or browse all homilies below."
-                : "No homilies have been published yet."}
+                ? "Try adjusting your search or browse all recent homilies below."
+                : "No homilies have been published in the last 30 days."}
             </p>
             {searchQuery && (
               <button
@@ -89,6 +91,23 @@ export default function HomiliesClient({ homilies }: { homilies: Homily[] }) {
             </AnimatePresence>
           </motion.div>
         )}
+
+        {/* Note about older homilies and YouTube link */}
+        <div className="mt-12 text-center">
+          <p className="text-gray-500 text-sm mb-4">
+            Looking for older homilies? Visit the priest’s YouTube channel
+            where all past homilies are permanently archived.
+          </p>
+          <a
+            href="https://www.youtube.com/@alphonsuseromoseleahiaegbe3968"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-900 text-white rounded-full font-bold hover:bg-blue-800 transition shadow-md"
+          >
+            <ExternalLink className="w-4 h-4" />
+            Visit YouTube Channel
+          </a>
+        </div>
       </div>
     </section>
   );

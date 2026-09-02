@@ -1,14 +1,7 @@
 "use client";
 
-// ──────────────────────────────────────────────
-// DailyHomily — Displays a YouTube video preview
-// with title, description, and a watch link.
-// ⚠️ Uses a regular <img> for the thumbnail;
-// consider switching to next/Image with remote
-// patterns configured for better performance.
-// ──────────────────────────────────────────────
-
 import Link from "next/link";
+import Image from "next/image";
 import { Play, ExternalLink } from "lucide-react";
 
 type Props = {
@@ -34,10 +27,14 @@ export default function DailyHomily({ title, description, youtubeId }: Props) {
               rel="noopener noreferrer"
               className="block relative aspect-video w-full rounded-2xl overflow-hidden shadow-xl group cursor-pointer"
             >
-              <img
+              <Image
                 src={thumbnailUrl}
                 alt={title}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                sizes="(max-width: 1024px) 100vw, 55vw"
+                loading="lazy"
+                unoptimized
               />
               {/* Center play button overlay */}
               <div className="absolute inset-0 flex items-center justify-center">

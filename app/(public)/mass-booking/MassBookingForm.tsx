@@ -85,7 +85,6 @@ export default function MassBookingForm() {
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm<MassBookingFormData>({
     resolver: zodResolver(massBookingSchema),
@@ -150,7 +149,7 @@ export default function MassBookingForm() {
                 type="tel"
                 {...register("phone")}
                 className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 focus:border-orange-600 focus:ring-2 focus:ring-orange-200 outline-none transition bg-white"
-                placeholder="+234 000 000 0000"
+                placeholder="+234 805 300 1379"
               />
             </div>
             {errors.phone && (

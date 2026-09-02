@@ -62,48 +62,51 @@ export async function sendMassBooking(data: {
       amount: data.amount,
       consent: data.consent,
       reference,
+      paymentInitiated: false,
     },
   });
 
   revalidatePath("/admin/mass-bookings");
-
+  revalidatePath("/");
   return { success: true, bookingId: booking.id, reference };
 }
-
-
-// Notify the parish office
-await sendEmail({
-  subject: `New Mass Booking – ${booking.name}`,
-  html: `
-    <h2 style="color:#1e3a8a;">New Mass Booking Request</h2>
-    <p><strong>Name:</strong> ${booking.name}</p>
-    <p><strong>Phone:</strong> ${booking.phone}</p>
-    <p><strong>Email:</strong> ${booking.email || "Not provided"}</p>
-    <p><strong>Intention:</strong> ${booking.intentionType}</p>
-    <p><strong>Location:</strong> ${booking.location}</p>
-    <p><strong>Date:</strong> ${booking.bookDate.toLocaleDateString("en-NG", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    })}</p>
-    <p><strong>Mass Time:</strong> ${booking.massTime || "Not specified"}</p>
-    <p><strong>Amount:</strong> ₦${booking.amount.toLocaleString()}</p>
-    <p><strong>Reference:</strong> ${booking.reference}</p>
-    <p><strong>Names to Pray For:</strong> ${booking.namesToPrayFor || "N/A"}</p>
-    <p><strong>Additional Info:</strong> ${booking.additionalInfo || "N/A"}</p>
-    <br/>
-    <p><a href="${process.env.BASE_URL}/admin/mass-bookings" style="display:inline-block;padding:10px 20px;background:#1e3a8a;color:white;border-radius:8px;text-decoration:none;">Manage Bookings</a></p>
-  `,
-});
 
 // ── Public: user confirms they have made the bank transfer ──
 export async function markPaymentInitiated(bookingId: string) {
   const booking = await prisma.massBooking.findUnique({ where: { id: bookingId } });
   if (!booking) throw new Error("Booking not found");
 
-  // The booking remains PENDING until admin confirms manually.
-  // We simply revalidate so the admin list updates.
+  await prisma.massBooking.update({
+    where: { id: bookingId },
+    data: { paymentInitiated: true },
+  });
+
+  // Send email to parish office
+  await sendEmail({
+    subject: `New Mass Booking – ${booking.name}`,
+    html: `
+      <h2 style="color:#1e3a8a;">New Mass Booking Request (Payment Confirmed)</h2>
+      <p><strong>Name:</strong> ${booking.name}</p>
+      <p><strong>Phone:</strong> ${booking.phone}</p>
+      <p><strong>Email:</strong> ${booking.email || "Not provided"}</p>
+      <p><strong>Intention:</strong> ${booking.intentionType}</p>
+      <p><strong>Location:</strong> ${booking.location}</p>
+      <p><strong>Date:</strong> ${booking.bookDate.toLocaleDateString("en-NG", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })}</p>
+      <p><strong>Mass Time:</strong> ${booking.massTime || "Not specified"}</p>
+      <p><strong>Amount:</strong> ₦${booking.amount.toLocaleString()}</p>
+      <p><strong>Reference:</strong> ${booking.reference}</p>
+      <p><strong>Names to Pray For:</strong> ${booking.namesToPrayFor || "N/A"}</p>
+      <p><strong>Additional Info:</strong> ${booking.additionalInfo || "N/A"}</p>
+      <br/>
+      <p><a href="${process.env.BASE_URL}/admin/mass-bookings" style="display:inline-block;padding:10px 20px;background:#1e3a8a;color:white;border-radius:8px;text-decoration:none;">Manage Bookings</a></p>
+    `,
+  });
+
   revalidatePath("/admin/mass-bookings");
   return { success: true };
 }
@@ -115,10 +118,40 @@ export async function updateBookingStatus(
 ) {
   await requireAdmin();
 
+  // Fetch the booking first to get its email
+  const booking = await prisma.massBooking.findUnique({ where: { id } });
+  if (!booking) throw new Error("Booking not found");
+
+  // Update the status
   await prisma.massBooking.update({
     where: { id },
     data: { status },
   });
+
+  // If the status is CONFIRMED, send a confirmation email to the person who booked
+  if (status === "CONFIRMED" && booking.email) {
+    await sendEmail({
+      subject: `Your Mass Booking is Confirmed – ${booking.reference}`,
+      html: `
+        <h2 style="color:#1e3a8a;">Mass Booking Confirmed</h2>
+        <p>Dear ${booking.name},</p>
+        <p>Your mass booking has been confirmed. Here are the details:</p>
+        <p><strong>Intention:</strong> ${booking.intentionType}</p>
+        <p><strong>Location:</strong> ${booking.location}</p>
+        <p><strong>Date:</strong> ${booking.bookDate.toLocaleDateString("en-NG", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })}</p>
+        <p><strong>Mass Time:</strong> ${booking.massTime || "Not specified"}</p>
+        <p><strong>Amount:</strong> ₦${booking.amount.toLocaleString()}</p>
+        <p><strong>Reference:</strong> ${booking.reference}</p>
+        <p>Thank you and God bless you.</p>
+        <p>St. Mary Catholic Church, Obe Quarter</p>
+      `,
+    });
+  }
 
   revalidatePath("/admin/mass-bookings");
   return { success: true };

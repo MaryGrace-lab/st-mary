@@ -4,8 +4,9 @@
 // with a shared Footer. The Header is kept on the
 // homepage only for simplicity (static approach).
 // ──────────────────────────────────────────────
-
+// app/(public)/layout.tsx
 import Footer from "@/components/layout/Footer";
+import { Toaster } from "sonner";
 
 export default function PublicLayout({
   children,
@@ -14,9 +15,8 @@ export default function PublicLayout({
 }) {
   return (
     <>
-      {/* Main content of each page */}
+      <Toaster position="top-right" richColors />
       {children}
-      {/* Footer appears on every public page */}
       <Footer />
     </>
   );

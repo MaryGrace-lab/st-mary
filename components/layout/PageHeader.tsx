@@ -14,7 +14,7 @@ export default function PageHeader() {
       <header className="fixed top-0 left-0 w-full z-30 bg-white shadow-md">
         <div className="max-w-7xl mx-auto flex items-center justify-between px-5 md:px-10 py-3">
           {/* Left side: circular logo + church name */}
-          <div className="flex items-center gap-3 sm:gap-4">
+          <div className="flex items-center gap-3 sm:gap-4 overflow-hidden">
             {/* Circular Logo */}
             <Link
               href="/"
@@ -30,12 +30,12 @@ export default function PageHeader() {
               />
             </Link>
 
-            {/* Church Name – always visible, responsive font size */}
-            <div className="leading-tight">
-              <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-bold text-blue-900 whitespace-nowrap">
+            {/* Church Name – truncated on very small screens */}
+            <div className="leading-tight overflow-hidden">
+              <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-bold text-blue-900 truncate">
                 St. Mary Catholic Church
               </p>
-              <p className="text-[10px] sm:text-xs md:text-sm text-gray-500 whitespace-nowrap">
+              <p className="text-[10px] sm:text-xs md:text-sm text-gray-500 truncate">
                 Obe Quarter, Sapele Road, Benin City
               </p>
             </div>
@@ -56,9 +56,10 @@ export default function PageHeader() {
               <Link
                 key={link.label}
                 href={link.href}
-                className="px-3 xl:px-4 py-2 rounded-full text-[11px] xl:text-xs font-bold text-blue-900 hover:bg-blue-50 transition-all duration-300 whitespace-nowrap"
+                className="relative px-3 xl:px-4 py-2 rounded-full text-[11px] xl:text-xs font-bold text-blue-900 hover:text-blue-700 transition-colors duration-300 group"
               >
                 {link.label}
+                <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gold-500 rounded-full transition-all duration-300 group-hover:w-1/2" />
               </Link>
             ))}
           </nav>

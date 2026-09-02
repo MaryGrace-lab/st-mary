@@ -1,15 +1,18 @@
 // ──────────────────────────────────────────────
 // Prisma Schema – St. Mary Catholic Church
-// Minimal production base + Homilies
 // ──────────────────────────────────────────────
 
 datasource db {
-  provider = "postgresql"           // change to "mysql" etc. if needed
-  // url is defined in prisma.config.ts for Prisma 7+
+  provider = "postgresql"
 }
 
 generator client {
   provider = "prisma-client-js"
+}
+
+enum DonationStatus {
+  PENDING
+  ACKNOWLEDGED
 }
 
 model Homily {
@@ -27,7 +30,7 @@ model Homily {
 model DailyReading {
   id                 String   @id @default(uuid())
   date               DateTime @unique
-  liturgicalDay      String?  // e.g., "15th Sunday in Ordinary Time"
+  liturgicalDay      String?
   firstReading       String
   firstReadingTitle  String
   responsorialPsalm  String
@@ -65,10 +68,25 @@ model MassBooking {
   consent         Boolean
   status          BookingStatus @default(PENDING)
   reference       String        @unique
+  paymentInitiated Boolean      @default(false)   // ← added
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 
   @@index([status])
   @@index([bookDate])
+  @@index([paymentInitiated])
 }
 
+model Donation {
+  id          String         @id @default(uuid())
+  name        String
+  email       String?
+  amount      Float
+  purpose     String?
+  message     String?
+  status      DonationStatus @default(PENDING)
+  createdAt   DateTime       @default(now())
+
+  @@index([status])
+  @@index([createdAt])
+}

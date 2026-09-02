@@ -41,7 +41,7 @@ export default function DailyReadingSection({ readingData }: { readingData: Dail
               </>
             ) : (
               <p className="text-white/65 text-sm md:text-base leading-relaxed max-w-2xl">
-                Today's readings have not been posted yet. Please check back later.
+                Today&apos;s readings have not been posted yet. Please check back later.
               </p>
             )}
           </div>

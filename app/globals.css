@@ -1,4 +1,48 @@
+/* app/globals.css – premium design tokens */
 @import "tailwindcss";
+
+@theme {
+  /* Premium gold accent (use sparingly for dividers, icons, hover states) */
+  --color-gold-400: #D4AF37;
+  --color-gold-500: #C7A24B;
+  --color-gold-600: #B4941F;
+}
+
+/* ── Base refinements ── */
+body {
+  font-family: var(--font-body), sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-heading), serif;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+/* Premium section spacing */
+.section-padding {
+  @apply py-24 md:py-32;
+}
+
+/* Soft card shadow (lift on hover) */
+.card-premium {
+  @apply bg-white rounded-2xl shadow-md border border-blue-50 transition-all duration-300;
+}
+.card-premium:hover {
+  @apply shadow-xl -translate-y-1;
+}
+
+/* Gold divider – used between sections */
+.gold-divider {
+  @apply w-20 h-0.5 bg-gold-500 mx-auto rounded-full;
+}
+
+/* Subtle section background alternation */
+.section-bg-soft {
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+}
 
 :root {
   --background: oklch(1 0 0);
@@ -101,4 +145,31 @@ h1, h2, h3, h4 {
 }
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+body {
+  font-family: var(--font-body), sans-serif;
+  overflow-x: hidden;   /* ← add this line */
+}
+
+/* ── Premium custom scrollbar ── */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #daedff;
+}
+::-webkit-scrollbar-thumb {
+  background: #024291;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ── Button / link micro‑interactions ── */
+button:active,
+a:active {
+  transform: scale(0.97);
+  transition: transform 0.1s ease;
 }

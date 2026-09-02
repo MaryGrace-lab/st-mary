@@ -1,61 +1,94 @@
 "use client";
 
+// ──────────────────────────────────────────────
+// DailyHomily — Displays a YouTube video preview
+// with title, description, and a watch link.
+// Now uses next/image for better performance.
+// ──────────────────────────────────────────────
+
 import Link from "next/link";
-import { Play } from "lucide-react";
+import Image from "next/image";
+import { Play, ExternalLink } from "lucide-react";
 
-interface Homily {
-  id: string;
+type Props = {
   title: string;
-  description: string | null;
+  description: string;
   youtubeId: string;
-  publishedAt: Date;
-}
+};
 
-export default function HomilyCard({ homily }: { homily: Homily }) {
-  const thumbnailUrl = `https://img.youtube.com/vi/${homily.youtubeId}/maxresdefault.jpg`;
-  const homilyUrl = `https://www.youtube.com/watch?v=${homily.youtubeId}`;
+export default function DailyHomily({ title, description, youtubeId }: Props) {
+  const homilyUrl = `https://www.youtube.com/watch?v=${youtubeId}`;
+  const thumbnailUrl = `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`;
 
   return (
-    <div className="bg-white rounded-2xl shadow-md border border-blue-100 overflow-hidden hover:shadow-lg transition-shadow">
-      <Link
-        href={homilyUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="block relative aspect-video group"
-      >
-        <img
-          src={thumbnailUrl}
-          alt={homily.title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-        />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-blue-900/90 flex items-center justify-center group-hover:bg-blue-900 group-hover:scale-110 transition-all duration-300 shadow-lg">
-            <Play className="w-5 h-5 text-white ml-0.5" fill="white" />
+    <section className="bg-gray-50 py-12 md:py-20">
+      <div className="max-w-7xl mx-auto px-5 md:px-10">
+        <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
+          
+          {/* Left: YouTube thumbnail with play button */}
+          <div className="w-full lg:w-[55%]">
+            <Link
+              href={homilyUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block relative aspect-video w-full rounded-2xl overflow-hidden shadow-xl group cursor-pointer"
+            >
+              <Image
+                src={thumbnailUrl}
+                alt={title}
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                sizes="(max-width: 1024px) 100vw, 55vw"
+                loading="lazy"
+                unoptimized // optional: remove if remote patterns configured
+              />
+              {/* Center play button overlay */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-blue-900/90 flex items-center justify-center group-hover:bg-blue-900 group-hover:scale-110 transition-all duration-300 shadow-lg">
+                  <div className="w-0 h-0 border-t-[12px] border-t-transparent border-b-[12px] border-b-transparent border-l-[20px] border-l-white ml-1" />
+                </div>
+              </div>
+              {/* "Video" badge */}
+              <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-sm rounded-lg px-2 py-1 flex items-center gap-1">
+                <Play size={14} className="text-red-500" fill="currentColor" />
+                <span className="text-white text-[10px] font-bold uppercase">Video</span>
+              </div>
+            </Link>
+          </div>
+
+          {/* Right: Text content */}
+          <div className="w-full lg:w-[45%] space-y-4">
+            <span className="text-red-600 text-xs md:text-sm font-bold uppercase tracking-[0.2em] flex items-center gap-2">
+              <Play size={16} className="text-red-600" fill="currentColor" /> Daily Homily
+            </span>
+            <h2 className="text-gray-900 text-2xl sm:text-3xl md:text-4xl font-bold leading-tight">
+              {title}
+            </h2>
+            <p className="text-gray-600 text-sm md:text-base leading-relaxed">
+              {description}
+            </p>
+            <Link
+              href={homilyUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-red-600 text-white rounded-full text-sm font-bold hover:bg-red-700 transition-all duration-300 shadow-lg shadow-red-600/25"
+            >
+              <Play size={18} fill="currentColor" />
+              Watch on YouTube
+              <ExternalLink size={14} />
+            </Link>
+
+            {/* View past homilies button */}
+            <Link
+              href="/homilies"
+              className="inline-flex items-center gap-2 px-6 py-3 border-2 border-blue-900 text-blue-900 rounded-full text-sm font-bold hover:bg-blue-900 hover:text-white transition-all duration-300"
+            >
+              View Past Homilies
+              <ExternalLink size={14} />
+            </Link>
           </div>
         </div>
-        <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-sm rounded-lg px-2 py-1 flex items-center gap-1">
-          <Play size={14} className="text-red-500" fill="currentColor" />
-          <span className="text-white text-[10px] font-bold uppercase">Video</span>
-        </div>
-      </Link>
-      <div className="p-4">
-        <h2 className="font-bold text-blue-900 leading-tight mb-1 line-clamp-2">
-          {homily.title}
-        </h2>
-        {homily.description && (
-          <p className="text-sm text-gray-600 mb-2 line-clamp-2">
-            {homily.description}
-          </p>
-        )}
-        <p className="text-xs text-gray-400">
-          {new Date(homily.publishedAt).toLocaleDateString("en-NG", {
-            weekday: "long",
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })}
-        </p>
       </div>
-    </div>
+    </section>
   );
 }

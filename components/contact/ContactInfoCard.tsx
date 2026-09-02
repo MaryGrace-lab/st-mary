@@ -31,22 +31,20 @@ const AUTO_SCROLL_INTERVAL = 5000; // 5 seconds
 export default function ContactInfoCard() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const isProgrammaticScroll = useRef(false); // flag to ignore onScroll when auto‑scrolling
+  const isProgrammaticScroll = useRef(false);
 
   // Scroll to a specific image
   const scrollToIndex = useCallback(
     (index: number) => {
       if (!scrollRef.current) return;
       const container = scrollRef.current;
-      const childWidth = container.clientWidth; // each image is 100% width of the container
-      isProgrammaticScroll.current = true; // mark as programmatic
+      const childWidth = container.clientWidth;
+      isProgrammaticScroll.current = true;
       container.scrollTo({
         left: index * childWidth,
         behavior: "smooth",
       });
-      // Reset the flag after the scroll animation finishes (roughly 500ms)
       setTimeout(() => {
         isProgrammaticScroll.current = false;
       }, 600);
@@ -81,16 +79,6 @@ export default function ContactInfoCard() {
     return () => stopAutoScroll();
   }, [startAutoScroll, stopAutoScroll]);
 
-  // Pause on hover, resume on leave
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-    stopAutoScroll();
-  };
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-    startAutoScroll();
-  };
-
   // Manual scroll (arrows) – reset timer
   const scroll = (direction: "left" | "right") => {
     const newIndex =
@@ -102,9 +90,9 @@ export default function ContactInfoCard() {
     startAutoScroll();
   };
 
-  // Sync currentIndex when user swipes manually (ignoring programmatic scrolls)
+  // Sync currentIndex when user swipes manually
   const handleScroll = () => {
-    if (isProgrammaticScroll.current) return; // ignore auto‑scroll events
+    if (isProgrammaticScroll.current) return;
     if (!scrollRef.current) return;
     const container = scrollRef.current;
     const scrollLeft = container.scrollLeft;
@@ -127,8 +115,8 @@ export default function ContactInfoCard() {
       {/* Image Gallery – auto‑scroll and manual swipe */}
       <div
         className="relative group"
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
+        onMouseEnter={() => stopAutoScroll()}
+        onMouseLeave={() => startAutoScroll()}
       >
         <div
           ref={scrollRef}
@@ -145,6 +133,7 @@ export default function ContactInfoCard() {
                 alt={img.alt}
                 fill
                 className="object-cover"
+                loading="lazy"
                 sizes="(max-width: 1024px) 100vw, 50vw"
               />
             </div>
@@ -215,10 +204,10 @@ export default function ContactInfoCard() {
           <div>
             <p className="font-semibold text-blue-900">Phone</p>
             <a
-              href="tel:+2340000000000"
+              href="tel:+2348053001379"
               className="text-gray-600 text-sm hover:text-orange-600 transition-colors"
             >
-              +234 000 000 0000
+              +234 805 300 1379
             </a>
           </div>
         </div>
@@ -230,10 +219,10 @@ export default function ContactInfoCard() {
           <div>
             <p className="font-semibold text-blue-900">Email</p>
             <a
-              href="mailto:stmarychurch@gmail.com"
+              href="mailto:stmarycatholicchurchobe@gmail.com"
               className="text-gray-600 text-sm hover:text-orange-600 transition-colors"
             >
-              stmarychurch@gmail.com
+              stmarycatholicchurchobe@gmail.com
             </a>
           </div>
         </div>

@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Menu } from "lucide-react";
 import { motion } from "framer-motion";
-import { fadeInUp, fadeIn } from "@/lib/animations";
+import { fadeInUp, staggerContainer } from "@/lib/animations";
 
 interface HeroSectionProps {
   onOpenMobileMenu: () => void;
@@ -45,13 +45,17 @@ export default function HeroSection({ onOpenMobileMenu }: HeroSectionProps) {
             <Link
               key={link.label}
               href={link.href}
-              className={`px-3 xl:px-4 py-2 rounded-full text-[11px] xl:text-xs font-bold transition-all duration-300 whitespace-nowrap ${
+              className={`relative px-3 xl:px-4 py-2 rounded-full text-[11px] xl:text-xs font-bold transition-all duration-300 whitespace-nowrap group ${
                 link.active
                   ? "bg-blue-900 text-white shadow-sm"
                   : "text-blue-900 hover:bg-blue-50"
               }`}
             >
               {link.label}
+              {/* Gold underline that appears on hover for non‑active links */}
+              {!link.active && (
+                <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gold-500 rounded-full transition-all duration-300 group-hover:w-1/2" />
+              )}
             </Link>
           ))}
         </nav>
@@ -67,47 +71,69 @@ export default function HeroSection({ onOpenMobileMenu }: HeroSectionProps) {
         </button>
       </header>
 
-      {/* Hero Content */}
-      {/* lg:pt-[152px] xl:pt-[164px] – shifts the text down on laptops/desktops to clear the logo */}
+      {/* Hero Content – Cinematic & Staggered */}
       <div className="absolute inset-0 z-10 flex items-center lg:items-start lg:pt-[152px] xl:pt-[164px] px-5 md:px-10 lg:px-16">
-        <div className="space-y-3 md:space-y-6 max-w-3xl w-full">
-          <h1 className="text-white text-[2.5rem] sm:text-[3rem] md:text-6xl lg:text-7xl xl:text-8xl font-black leading-[1.08] tracking-tight">
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={staggerContainer}
+          className="space-y-4 md:space-y-6 max-w-3xl w-full"
+        >
+          <motion.h1
+            variants={fadeInUp}
+            className="text-white text-[2.75rem] sm:text-[3.5rem] md:text-6xl lg:text-7xl xl:text-8xl font-black leading-[1.05] tracking-tight drop-shadow-lg"
+          >
             St. Mary
             <br />
             Catholic Church
-          </h1>
-          <p className="text-white/90 text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold">
+          </motion.h1>
+          <motion.p
+            variants={fadeInUp}
+            className="text-white/90 text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold drop-shadow-md"
+          >
             Obe Quarter, Sapele Road, Benin City, Edo State, Nigeria
-          </p>
-          <p className="text-white/50 text-sm sm:text-base md:text-lg max-w-lg">
+          </motion.p>
+          <motion.p
+            variants={fadeInUp}
+            className="text-white/60 text-sm sm:text-base md:text-lg max-w-lg drop-shadow-sm"
+          >
             A parish of the Catholic Archdiocese of Benin City
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 pt-2">
+          </motion.p>
+          <motion.div
+            variants={fadeInUp}
+            className="flex flex-col sm:flex-row gap-4 pt-4"
+          >
+            {/* Primary CTA – filled */}
             <a
               href="#mass-times"
-              className="w-full sm:w-auto px-8 py-3.5 bg-blue-900 text-white rounded-full text-[15px] md:text-base font-bold text-center hover:bg-blue-800 hover:scale-[1.03] active:scale-95 transition-all duration-300 shadow-lg shadow-blue-900/25"
+              className="w-full sm:w-auto px-10 py-4 bg-blue-900 text-white rounded-full text-base font-bold text-center hover:bg-blue-800 hover:scale-105 active:scale-95 transition-all duration-300 shadow-2xl shadow-blue-900/40"
             >
               Mass Times
             </a>
+            {/* Secondary CTA – outlined */}
             <a
               href="#daily-homily"
-              className="w-full sm:w-auto px-8 py-3.5 bg-blue-900 text-white rounded-full text-[15px] md:text-base font-bold text-center hover:bg-blue-800 hover:scale-[1.03] active:scale-95 transition-all duration-300 shadow-lg shadow-blue-900/25"
+              className="w-full sm:w-auto px-10 py-4 border-2 border-white/70 text-white rounded-full text-base font-bold text-center hover:bg-white/10 hover:border-white active:scale-95 transition-all duration-300"
             >
-              Daily Homilies
+              Watch Today&apos;s Homily
             </a>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
 
-      {/* Scroll Indicator */}
+      {/* Premium Scroll Indicator – gold dot, subtle bounce */}
       <div
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 hidden md:flex flex-col items-center gap-2 text-white/50"
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 hidden md:flex flex-col items-center gap-2 text-white/40"
         aria-hidden="true"
       >
-        <span className="text-[10px] uppercase tracking-[0.2em]">Scroll</span>
-        <div className="w-5 h-8 rounded-full border-2 border-white/30 flex justify-center pt-1">
-          <div className="w-1 h-2 rounded-full bg-white/50 animate-bounce" />
-        </div>
+        <span className="text-[11px] uppercase tracking-[0.3em] font-medium">Scroll</span>
+        <motion.div
+          animate={{ y: [0, 8, 0] }}
+          transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+          className="w-5 h-8 rounded-full border-2 border-white/30 flex justify-center pt-1"
+        >
+          <div className="w-1 h-2 rounded-full bg-gold-500" />
+        </motion.div>
       </div>
     </section>
   );

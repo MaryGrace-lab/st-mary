@@ -4,7 +4,17 @@ import PageHeader from "@/components/layout/PageHeader";
 import HomiliesClient from "./HomiliesClient";
 
 export default async function HomiliesPage() {
+  // Calculate the date 30 days ago from today
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+  // Fetch only homilies published in the last 30 days
   const homilies = await prisma.homily.findMany({
+    where: {
+      publishedAt: {
+        gte: thirtyDaysAgo,
+      },
+    },
     orderBy: { publishedAt: "desc" },
   });
 
@@ -25,7 +35,7 @@ export default async function HomiliesPage() {
         </div>
       </section>
 
-      {/* Homilies Grid with search & animation */}
+      {/* Pass homilies to client component, plus a note */}
       <HomiliesClient homilies={homilies} />
     </>
   );

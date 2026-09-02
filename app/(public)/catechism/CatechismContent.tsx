@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, BookOpen, Search } from "lucide-react";
 import Image from "next/image";
-import { catechismTopics, type CatechismTopic } from "@/data/catechism";
+import { catechismTopics } from "@/data/catechism";
 
 export default function CatechismContent() {
   const [activeIndex, setActiveIndex] = useState(0);

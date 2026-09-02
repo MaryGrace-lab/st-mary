@@ -126,14 +126,14 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-center gap-3 text-xs text-gray-500">
           <p>&copy; {new Date().getFullYear()} St. Mary Catholic Church, Obe Quarter. All rights reserved.</p>
           <p>
-            Built by{" "}
+            Contact Web Developer for{" "}
             <a
               href="https://wa.me/2348109421176"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gold-500 hover:text-gold-400 transition-colors font-medium"
             >
-              Mary
+              inquiries
             </a>
           </p>
         </div>

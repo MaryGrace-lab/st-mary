@@ -3,9 +3,7 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const OFFICE_EMAIL = process.env.PARISH_OFFICE_EMAIL!;
-const FROM_EMAIL =
-  process.env.EMAIL_FROM ||
-  "St. Mary Catholic Church <notifications@stmaryobe.org>";
+const FROM_EMAIL = process.env.EMAIL_FROM || "St. Mary Catholic Church <notifications@stmaryobe.org>";
 
 export async function sendEmail({
   subject,

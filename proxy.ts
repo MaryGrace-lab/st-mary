@@ -1,9 +1,9 @@
-// proxy.ts – Production‑ready: authentication + security headers
+// proxy.ts
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { checkRateLimit } from "@/lib/rateLimit";
 
-// ── Helper: apply security headers ──
 function applySecurityHeaders(response: NextResponse) {
   response.headers.set("X-Frame-Options", "DENY");
   response.headers.set("X-Content-Type-Options", "nosniff");
@@ -13,14 +13,12 @@ function applySecurityHeaders(response: NextResponse) {
     "Permissions-Policy",
     "camera=(), microphone=(), geolocation=(), interest-cohort=()"
   );
-
   if (process.env.NODE_ENV === "production") {
     response.headers.set(
       "Strict-Transport-Security",
       "max-age=31536000; includeSubDomains; preload"
     );
   }
-
   response.headers.set(
     "Content-Security-Policy",
     [
@@ -38,33 +36,46 @@ function applySecurityHeaders(response: NextResponse) {
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // ── 1. Allow login page and its query params (e.g., ?callbackUrl=...) ──
+  if (
+    (pathname === "/api/auth/callback/credentials" ||
+      pathname === "/api/auth/signin") &&
+    request.method === "POST"
+  ) {
+    const ip = request.headers.get("x-forwarded-for") ?? "anonymous";
+    const { success, remaining } = await checkRateLimit(ip, {
+      endpoint: "login",
+      limit: 5,
+      windowSeconds: 15 * 60,
+    });
+
+    if (!success) {
+      return NextResponse.json(
+        { error: "Too many login attempts. Please try again later." },
+        { status: 429, headers: { "Retry-After": "900" } }
+      );
+    }
+  }
+
   if (pathname === "/admin/login" || pathname.startsWith("/admin/login?")) {
     const res = NextResponse.next();
     applySecurityHeaders(res);
     return res;
   }
 
-  // ── 2. Protect all other /admin routes ──
   if (pathname.startsWith("/admin")) {
-    const session = await auth();   // ← returns Session | null
-
+    const session = await auth();
     if (!session || session.user?.role !== "admin") {
-      // Not authenticated → redirect to login with callbackUrl
       const loginUrl = new URL("/admin/login", request.url);
       loginUrl.searchParams.set("callbackUrl", request.url);
       const res = NextResponse.redirect(loginUrl);
       applySecurityHeaders(res);
       return res;
     }
-
-    // Authenticated and admin → allow request
     const res = NextResponse.next();
     applySecurityHeaders(res);
     return res;
   }
 
-  // ── 3. All other routes (public) → just add security headers ──
   const res = NextResponse.next();
   applySecurityHeaders(res);
   return res;

@@ -1,8 +1,5 @@
 "use client";
 
-// app/(public)/contact/ContactForm.tsx
-// Modern contact form with floating labels, two‑column layout, and iconography.
-
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -10,7 +7,6 @@ import { useState } from "react";
 import { sendContactMessage } from "./actions";
 import { User, Mail, Phone, BookOpen, MessageSquare, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 
-// Validation schema – unchanged
 const contactSchema = z.object({
   name: z.string().min(2, "Name is required"),
   email: z.string().email("Invalid email address"),
@@ -20,6 +16,7 @@ const contactSchema = z.object({
   consent: z.boolean().refine((val) => val === true, {
     message: "You must agree to be contacted",
   }),
+  honeypot: z.string().optional(),
 });
 
 type ContactFormData = z.infer<typeof contactSchema>;
@@ -46,9 +43,9 @@ export default function ContactForm() {
       } else {
         setStatus("error");
       }
-      } catch {
-        setStatus("error");
-      }
+    } catch {
+      setStatus("error");
+    }
   };
 
   return (
@@ -58,7 +55,6 @@ export default function ContactForm() {
         Send us a message
       </h2>
 
-      {/* Status alerts */}
       {status === "success" && (
         <div className="bg-green-50 text-green-800 p-4 rounded-lg mb-6 flex items-start gap-2">
           <CheckCircle className="w-5 h-5 shrink-0 mt-0.5" />
@@ -80,10 +76,19 @@ export default function ContactForm() {
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-        {/* Name & Email – two columns on md+ */}
+        {/* Honeypot field */}
+        <input
+          type="text"
+          {...register("honeypot")}
+          className="hidden"
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
+        />
+
+        {/* Name & Email */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {/* Name */}
-          <div className="relative">
+          <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
               Full Name <span className="text-red-500">*</span>
             </label>
@@ -96,13 +101,9 @@ export default function ContactForm() {
                 placeholder="Your name"
               />
             </div>
-            {errors.name && (
-              <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>
-            )}
+            {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
           </div>
-
-          {/* Email */}
-          <div className="relative">
+          <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
               Email Address <span className="text-red-500">*</span>
             </label>
@@ -115,18 +116,15 @@ export default function ContactForm() {
                 placeholder="you@example.com"
               />
             </div>
-            {errors.email && (
-              <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
-            )}
+            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
           </div>
         </div>
 
-        {/* Phone & Subject – two columns on md+ */}
+        {/* Phone & Subject */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {/* Phone */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Phone <span className="text-red-500">*</span>
+              Phone <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -138,8 +136,6 @@ export default function ContactForm() {
               />
             </div>
           </div>
-
-          {/* Subject */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
               Subject <span className="text-red-500">*</span>
@@ -153,9 +149,7 @@ export default function ContactForm() {
                 placeholder="What is this about?"
               />
             </div>
-            {errors.subject && (
-              <p className="text-red-500 text-xs mt-1">{errors.subject.message}</p>
-            )}
+            {errors.subject && <p className="text-red-500 text-xs mt-1">{errors.subject.message}</p>}
           </div>
         </div>
 
@@ -173,12 +167,10 @@ export default function ContactForm() {
               placeholder="Your message..."
             />
           </div>
-          {errors.message && (
-            <p className="text-red-500 text-xs mt-1">{errors.message.message}</p>
-          )}
+          {errors.message && <p className="text-red-500 text-xs mt-1">{errors.message.message}</p>}
         </div>
 
-        {/* Consent checkbox */}
+        {/* Consent */}
         <div className="flex items-start gap-3">
           <input
             type="checkbox"
@@ -191,11 +183,9 @@ export default function ContactForm() {
             <span className="text-red-500">*</span>
           </label>
         </div>
-        {errors.consent && (
-          <p className="text-red-500 text-xs -mt-3">{errors.consent.message}</p>
-        )}
+        {errors.consent && <p className="text-red-500 text-xs -mt-3">{errors.consent.message}</p>}
 
-        {/* Submit button */}
+        {/* Submit */}
         <button
           type="submit"
           disabled={status === "loading"}

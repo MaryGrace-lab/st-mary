@@ -1,8 +1,9 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
 import { sendEmail } from "@/lib/email";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
+import { revalidatePath } from "next/cache";
 
 export async function notifyDonation(data: {
   name: string;
@@ -10,12 +11,29 @@ export async function notifyDonation(data: {
   amount: number;
   purpose?: string;
   message?: string;
+  honeypot?: string;
 }) {
+  // Honeypot check
+  if (data.honeypot && data.honeypot.length > 0) {
+    console.log("Spam detected (honeypot filled)");
+    return { success: false, error: "Spam detected" };
+  }
+
+  // Rate limiting
+  const ip = await getClientIp();
+  const { success } = await checkRateLimit(ip, {
+    endpoint: "donation",
+    limit: 10,
+    windowSeconds: 60 * 60,
+  });
+  if (!success) {
+    return { success: false, error: "Too many submissions. Please try again later." };
+  }
+
   if (!data.name || !data.amount) {
     throw new Error("Name and amount are required.");
   }
 
-  // Save donation to database
   await prisma.donation.create({
     data: {
       name: data.name,
@@ -26,7 +44,6 @@ export async function notifyDonation(data: {
     },
   });
 
-  // Send email notification
   await sendEmail({
     subject: `New Donation Notification – ${data.name}`,
     html: `
@@ -36,8 +53,6 @@ export async function notifyDonation(data: {
       <p><strong>Amount:</strong> ₦${data.amount.toLocaleString()}</p>
       <p><strong>Purpose:</strong> ${data.purpose || "Not specified"}</p>
       <p><strong>Message:</strong> ${data.message || "None"}</p>
-      <br/>
-      <p style="color:#6b7280;font-size:0.875rem;">This donation was reported by the donor. Please verify the transfer in the church bank account.</p>
     `,
   });
 

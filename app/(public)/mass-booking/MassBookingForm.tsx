@@ -19,7 +19,6 @@ import {
   MapPin,
 } from "lucide-react";
 
-// ── Validation schema ──
 const massBookingSchema = z.object({
   name: z.string().min(2, "Name is required"),
   email: z.string().email("Invalid email address").optional().or(z.literal("")),
@@ -54,11 +53,11 @@ const massBookingSchema = z.object({
   consent: z.boolean().refine((val) => val === true, {
     message: "You must agree to be contacted",
   }),
+  honeypot: z.string().optional(),
 });
 
 type MassBookingFormData = z.infer<typeof massBookingSchema>;
 
-// ── Intention types for the dropdown ──
 const intentionTypes = [
   { value: "THANKSGIVING", label: "Thanksgiving" },
   { value: "ANNIVERSARY", label: "Anniversary" },
@@ -71,7 +70,6 @@ const intentionTypes = [
   { value: "OTHER", label: "Other" },
 ];
 
-// Location options with Mass times
 const locations = [
   { value: "All Saints: 6:00am", label: "All Saints – 6:00 AM" },
   { value: "St. Mary: 8:00am", label: "St. Mary – 8:00 AM" },
@@ -88,7 +86,7 @@ export default function MassBookingForm() {
     formState: { errors },
   } = useForm<MassBookingFormData>({
     resolver: zodResolver(massBookingSchema),
-    defaultValues: { amount: 500 }, // ₦500 default
+    defaultValues: { amount: 500 },
   });
 
   const onSubmit = async (data: MassBookingFormData) => {
@@ -120,6 +118,16 @@ export default function MassBookingForm() {
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        {/* Honeypot field */}
+        <input
+          type="text"
+          {...register("honeypot")}
+          className="hidden"
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
+        />
+
         {/* Name & Phone */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
@@ -135,9 +143,7 @@ export default function MassBookingForm() {
                 placeholder="Your name"
               />
             </div>
-            {errors.name && (
-              <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>
-            )}
+            {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
@@ -152,9 +158,7 @@ export default function MassBookingForm() {
                 placeholder="+234 805 300 1379"
               />
             </div>
-            {errors.phone && (
-              <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>
-            )}
+            {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>}
           </div>
         </div>
 
@@ -172,9 +176,7 @@ export default function MassBookingForm() {
               placeholder="you@example.com"
             />
           </div>
-          {errors.email && (
-            <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
-          )}
+          {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
         </div>
 
         {/* Intention Type & Location */}
@@ -194,11 +196,7 @@ export default function MassBookingForm() {
                 </option>
               ))}
             </select>
-            {errors.intentionType && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.intentionType.message}
-              </p>
-            )}
+            {errors.intentionType && <p className="text-red-500 text-xs mt-1">{errors.intentionType.message}</p>}
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
@@ -218,11 +216,7 @@ export default function MassBookingForm() {
                 ))}
               </select>
             </div>
-            {errors.location && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.location.message}
-              </p>
-            )}
+            {errors.location && <p className="text-red-500 text-xs mt-1">{errors.location.message}</p>}
           </div>
         </div>
 
@@ -240,11 +234,7 @@ export default function MassBookingForm() {
                 className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 focus:border-orange-600 focus:ring-2 focus:ring-orange-200 outline-none bg-white"
               />
             </div>
-            {errors.bookDate && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.bookDate.message}
-              </p>
-            )}
+            {errors.bookDate && <p className="text-red-500 text-xs mt-1">{errors.bookDate.message}</p>}
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
@@ -258,15 +248,11 @@ export default function MassBookingForm() {
                 className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 focus:border-orange-600 focus:ring-2 focus:ring-orange-200 outline-none bg-white"
               />
             </div>
-            {errors.massTime && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.massTime.message}
-              </p>
-            )}
+            {errors.massTime && <p className="text-red-500 text-xs mt-1">{errors.massTime.message}</p>}
           </div>
         </div>
 
-        {/* Amount – Naira (minimum ₦500) */}
+        {/* Amount */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
             Amount <span className="text-red-500">*</span>
@@ -284,9 +270,7 @@ export default function MassBookingForm() {
               placeholder="500"
             />
           </div>
-          {errors.amount && (
-            <p className="text-red-500 text-xs mt-1">{errors.amount.message}</p>
-          )}
+          {errors.amount && <p className="text-red-500 text-xs mt-1">{errors.amount.message}</p>}
           <p className="text-xs text-gray-400 mt-1">
             Minimum ₦500. You can increase if you wish.
           </p>
@@ -338,9 +322,7 @@ export default function MassBookingForm() {
             booking. <span className="text-red-500">*</span>
           </label>
         </div>
-        {errors.consent && (
-          <p className="text-red-500 text-xs -mt-3">{errors.consent.message}</p>
-        )}
+        {errors.consent && <p className="text-red-500 text-xs -mt-3">{errors.consent.message}</p>}
 
         {/* Submit & Pay */}
         <button

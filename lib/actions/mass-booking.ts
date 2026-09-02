@@ -6,6 +6,7 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import crypto from "crypto";
 import { sendEmail } from "@/lib/email";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 
 // ── Admin guard ──
 async function requireAdmin() {
@@ -33,7 +34,25 @@ export async function sendMassBooking(data: {
   namesToPrayFor?: string;
   additionalInfo?: string;
   consent: boolean;
+  honeypot?: string;
 }) {
+  // Honeypot check
+  if (data.honeypot && data.honeypot.length > 0) {
+    console.log("Spam detected (honeypot filled)");
+    return { success: false, error: "Spam detected" };
+  }
+
+  // Rate limiting
+  const ip = await getClientIp();
+  const { success } = await checkRateLimit(ip, {
+    endpoint: "mass-booking",
+    limit: 10,
+    windowSeconds: 60 * 60, // 1 hour
+  });
+  if (!success) {
+    return { success: false, error: "Too many submissions. Please try again later." };
+  }
+
   if (
     !data.name ||
     !data.phone ||
@@ -118,17 +137,14 @@ export async function updateBookingStatus(
 ) {
   await requireAdmin();
 
-  // Fetch the booking first to get its email
   const booking = await prisma.massBooking.findUnique({ where: { id } });
   if (!booking) throw new Error("Booking not found");
 
-  // Update the status
   await prisma.massBooking.update({
     where: { id },
     data: { status },
   });
 
-  // If the status is CONFIRMED, send a confirmation email to the person who booked
   if (status === "CONFIRMED" && booking.email) {
     await sendEmail({
       subject: `Your Mass Booking is Confirmed – ${booking.reference}`,

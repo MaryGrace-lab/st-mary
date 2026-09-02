@@ -90,3 +90,12 @@ model Donation {
   @@index([status])
   @@index([createdAt])
 }
+
+model RateLimit {
+  id        String   @id @default(uuid())
+  ip        String
+  endpoint  String
+  timestamp DateTime @default(now())
+
+  @@index([ip, endpoint, timestamp])
+}

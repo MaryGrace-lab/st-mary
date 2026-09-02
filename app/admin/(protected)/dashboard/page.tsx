@@ -144,7 +144,7 @@ export default async function AdminDashboardPage() {
           <p className="text-gray-500 text-sm">No readings recorded yet.</p>
         ) : (
           <div className="space-y-3">
-            {recentReadings.map((r) => (
+            {recentReadings.map((r: { date: Date; liturgicalDay: string | null }) => (
               <div
                 key={r.date.toISOString()}
                 className="flex items-center justify-between p-3 rounded-lg hover:bg-blue-50 transition"

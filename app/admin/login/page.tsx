@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { User, Lock, LogIn, Church, Eye, EyeOff } from "lucide-react";
 
@@ -194,6 +195,15 @@ export default function AdminLoginPage() {
             </form>
 
             <div className="mt-6 text-center">
+              <Link
+                href="/"
+                className="text-sm text-blue-900 hover:underline"
+              >
+                ← Back to Home
+              </Link>
+            </div>
+
+            <div className="mt-4 text-center">
               <p className="text-xs text-gray-400">
                 Protected by 256‑bit encryption • Secure parish admin panel
               </p>

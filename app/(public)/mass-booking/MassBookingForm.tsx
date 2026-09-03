@@ -41,6 +41,7 @@ const massBookingSchema = z.object({
     ["All Saints: 6:00am", "St. Mary: 8:00am", "St. Joseph: 11:00am"],
     { message: "Please select a parish location" }
   ),
+  intentionNote: z.string().optional(),
   bookDate: z
     .string()
     .refine((val) => new Date(val) > new Date(), {
@@ -217,6 +218,22 @@ export default function MassBookingForm() {
               </select>
             </div>
             {errors.location && <p className="text-red-500 text-xs mt-1">{errors.location.message}</p>}
+          </div>
+        </div>
+
+        {/* Intention Note */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            Intention Details <span className="text-gray-400">(optional)</span>
+          </label>
+          <div className="relative">
+            <MessageSquare className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+            <textarea
+              rows={3}
+              {...register("intentionNote")}
+              className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 focus:border-orange-600 focus:ring-2 focus:ring-orange-200 outline-none transition resize-none bg-white"
+              placeholder="Provide details about your intention..."
+            />
           </div>
         </div>
 

@@ -77,12 +77,25 @@ export default function CheckoutClient({ booking }: { booking: Booking }) {
               The parish office will verify your transfer and confirm your booking.
               You will receive a notification once confirmed.
             </p>
-            <Link
-              href="/"
-              className="inline-block bg-blue-900 text-white px-6 py-2 rounded-lg font-medium"
+            <p className="text-sm text-gray-500 mb-4">
+              Please share your payment receipt with the secretary on WhatsApp:
+            </p>
+            <a
+              href="https://wa.me/2348125263186?text=I%20have%20made%20a%20payment%20for%20my%20mass%20booking.%20Here%20is%20my%20receipt."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-full font-bold hover:bg-green-700 transition shadow-lg"
             >
-              Return Home
-            </Link>
+              Share Receipt on WhatsApp
+            </a>
+            <div className="mt-6">
+              <Link
+                href="/"
+                className="inline-block bg-blue-900 text-white px-6 py-2 rounded-lg font-medium"
+              >
+                Return Home
+              </Link>
+            </div>
           </div>
         </div>
       </div>

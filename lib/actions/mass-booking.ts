@@ -28,6 +28,7 @@ export async function sendMassBooking(data: {
   phone: string;
   intentionType: string;
   location: string;
+  intentionNote?: string;
   bookDate: string;
   massTime?: string;
   amount: number;
@@ -74,6 +75,7 @@ export async function sendMassBooking(data: {
       phone: data.phone,
       intentionType: data.intentionType,
       location: data.location,
+      intentionNote: data.intentionNote || null,
       bookDate: new Date(data.bookDate),
       massTime: data.massTime || null,
       namesToPrayFor: data.namesToPrayFor || null,

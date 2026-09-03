@@ -220,7 +220,7 @@ export default function ContactInfoCard() {
             <p className="font-semibold text-blue-900">Email</p>
             <a
               href="mailto:stmarycatholicchurchobe@gmail.com"
-              className="text-gray-600 text-sm hover:text-orange-600 transition-colors"
+              className="text-gray-600 text-sm hover:text-orange-600 transition-colors break-all"
             >
               stmarycatholicchurchobe@gmail.com
             </a>

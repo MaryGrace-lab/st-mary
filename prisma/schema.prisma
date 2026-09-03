@@ -60,6 +60,7 @@ model MassBooking {
   phone           String
   intentionType   String
   location        String
+  intentionNote   String?
   bookDate        DateTime
   massTime        String?
   namesToPrayFor  String?

@@ -8,9 +8,11 @@ const FROM_EMAIL = process.env.EMAIL_FROM || "St. Mary Catholic Church <notifica
 export async function sendEmail({
   subject,
   html,
+  to,                       // optional recipient override
 }: {
   subject: string;
   html: string;
+  to?: string;
 }) {
   if (process.env.NODE_ENV !== "production") {
     console.log("📧 Email not sent (dev mode):", subject);
@@ -18,9 +20,11 @@ export async function sendEmail({
   }
 
   try {
+    const recipient = to || OFFICE_EMAIL;
+
     const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
-      to: OFFICE_EMAIL,
+      to: recipient,
       subject,
       html,
     });

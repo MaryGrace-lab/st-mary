@@ -8,6 +8,9 @@ export default function VideoHero() {
   const [videoPlaying, setVideoPlaying] = useState(false);
   const [forceShowPoster, setForceShowPoster] = useState(true);
 
+  // Use remote Vercel Blob URL if set, otherwise local file for development
+  const videoUrl = process.env.NEXT_PUBLIC_HERO_VIDEO_URL || "/consecration.mp4";
+
   // The poster is visible if we're within the first 5 seconds, OR if the video hasn't started yet
   const showPoster = forceShowPoster || !videoPlaying;
 
@@ -62,7 +65,7 @@ export default function VideoHero() {
         preload="auto"
         className="absolute inset-0 w-full h-full object-cover"
       >
-        <source src="/consecration.mp4" type="video/mp4" />
+        <source src={videoUrl} type="video/mp4" />
       </video>
 
       {/* Poster overlay – fades out after 5s if video is playing */}

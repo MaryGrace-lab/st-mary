@@ -122,6 +122,7 @@ export async function markPaymentInitiated(bookingId: string) {
       <p><strong>Amount:</strong> ₦${booking.amount.toLocaleString()}</p>
       <p><strong>Reference:</strong> ${booking.reference}</p>
       <p><strong>Names to Pray For:</strong> ${booking.namesToPrayFor || "N/A"}</p>
+      <p><strong>Intention Note:</strong> ${booking.intentionNote || "N/A"}</p>
       <p><strong>Additional Info:</strong> ${booking.additionalInfo || "N/A"}</p>
       <br/>
       <p><a href="${process.env.BASE_URL}/admin/mass-bookings" style="display:inline-block;padding:10px 20px;background:#1e3a8a;color:white;border-radius:8px;text-decoration:none;">Manage Bookings</a></p>
@@ -147,8 +148,10 @@ export async function updateBookingStatus(
     data: { status },
   });
 
+  // If CONFIRMED, send email to the person who booked
   if (status === "CONFIRMED" && booking.email) {
     await sendEmail({
+      to: booking.email,   // ← send to booker, not office
       subject: `Your Mass Booking is Confirmed – ${booking.reference}`,
       html: `
         <h2 style="color:#1e3a8a;">Mass Booking Confirmed</h2>

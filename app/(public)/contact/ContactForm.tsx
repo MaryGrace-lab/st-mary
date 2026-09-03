@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState } from "react";
-import { sendContactMessage } from "./actions";
+import { sendContactMessage } from "@/lib/actions/contact";
 import { User, Mail, Phone, BookOpen, MessageSquare, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 
 const contactSchema = z.object({

@@ -101,6 +101,7 @@ export default function AdminSidebar({ open, onClose }: AdminSidebarProps) {
           message="Are you sure you want to sign out of the admin panel?"
           onConfirm={handleSignOut}
           onCancel={() => setShowSignOutConfirm(false)}
+          confirmText="Sign Out"
         />
       )}
     </>

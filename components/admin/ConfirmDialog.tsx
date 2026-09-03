@@ -9,6 +9,7 @@ interface ConfirmDialogProps {
   onConfirm: () => void;
   onCancel: () => void;
   loading?: boolean;
+  confirmText?: string;   // new optional prop
 }
 
 export default function ConfirmDialog({
@@ -17,6 +18,7 @@ export default function ConfirmDialog({
   onConfirm,
   onCancel,
   loading,
+  confirmText = "Delete",   // default remains Delete
 }: ConfirmDialogProps) {
   return (
     <AnimatePresence>
@@ -44,10 +46,10 @@ export default function ConfirmDialog({
             <button
               onClick={onConfirm}
               disabled={loading}
-              className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition flex items-center gap-2 disabled:opacity-50"
+              className="px-4 py-2 rounded-lg bg-blue-900 text-white hover:bg-blue-800 transition flex items-center gap-2 disabled:opacity-50"
             >
               {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-              {loading ? "Deleting..." : "Delete"}
+              {loading ? "Please wait..." : confirmText}
             </button>
           </div>
         </motion.div>

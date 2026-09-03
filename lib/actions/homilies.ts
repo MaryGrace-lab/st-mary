@@ -56,21 +56,27 @@ export async function createHomily(formData: FormData) {
   }
 
   await prisma.homily.create({
-    data: { title, description, youtubeId },
+    data: {
+      title,
+      description: description || null,
+      youtubeId,
+      publishedAt: new Date(),   // ← explicitly set to now
+    },
   });
 
   await sendEmail({
-  subject: `New Homily Posted – ${title}`,
-  html: `
-    <h2 style="color:#1e3a8a;">New Homily Added</h2>
-    <p><strong>Title:</strong> ${title}</p>
-    <p><strong>Description:</strong> ${description || "No description"}</p>
-    <p><a href="https://youtube.com/watch?v=${youtubeId}" style="display:inline-block;padding:10px 20px;background:#1e3a8a;color:white;border-radius:8px;text-decoration:none;">Watch on YouTube</a></p>
-  `,
-});
+    subject: `New Homily Posted – ${title}`,
+    html: `
+      <h2 style="color:#1e3a8a;">New Homily Added</h2>
+      <p><strong>Title:</strong> ${title}</p>
+      <p><strong>Description:</strong> ${description || "No description"}</p>
+      <p><a href="https://youtube.com/watch?v=${youtubeId}" style="display:inline-block;padding:10px 20px;background:#1e3a8a;color:white;border-radius:8px;text-decoration:none;">Watch on YouTube</a></p>
+    `,
+  });
 
   revalidatePath("/admin/dashboard");
   revalidatePath("/");
+  revalidatePath("/homilies");      // ← added for public page
   return { success: true };
 }
 
@@ -90,6 +96,7 @@ export async function setFeaturedHomily(id: string) {
 
   revalidatePath("/");
   revalidatePath("/admin/dashboard");
+  revalidatePath("/homilies");      // optional, but keeps list consistent if featured flag shown
 }
 
 // ── Delete a homily ──
@@ -99,6 +106,7 @@ export async function deleteHomily(id: string) {
 
   revalidatePath("/admin/dashboard");
   revalidatePath("/");
+  revalidatePath("/homilies");      // ← added
   return { success: true };
 }
 
@@ -121,10 +129,16 @@ export async function updateHomily(id: string, formData: FormData) {
 
   await prisma.homily.update({
     where: { id },
-    data: { title, description, youtubeId },
+    data: {
+      title,
+      description: description || null,
+      youtubeId,
+      // publishedAt is not changed on edit; keeps original date
+    },
   });
 
   revalidatePath("/admin/dashboard");
   revalidatePath("/");
+  revalidatePath("/homilies");      // ← added
   return { success: true };
 }

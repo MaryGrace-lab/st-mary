@@ -19,6 +19,8 @@ function applySecurityHeaders(response: NextResponse) {
       "max-age=31536000; includeSubDomains; preload"
     );
   }
+
+  // Updated Content Security Policy
   response.headers.set(
     "Content-Security-Policy",
     [
@@ -28,6 +30,7 @@ function applySecurityHeaders(response: NextResponse) {
       "img-src 'self' data: blob: https:",
       "font-src 'self'",
       "connect-src 'self' https:",
+      "media-src 'self' https://*.public.blob.vercel-storage.com",  // ← added
       "frame-ancestors 'none'",
     ].join("; ")
   );
@@ -36,6 +39,7 @@ function applySecurityHeaders(response: NextResponse) {
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Rate limit login endpoints
   if (
     (pathname === "/api/auth/callback/credentials" ||
       pathname === "/api/auth/signin") &&
@@ -56,12 +60,14 @@ export async function proxy(request: NextRequest) {
     }
   }
 
+  // Allow login page
   if (pathname === "/admin/login" || pathname.startsWith("/admin/login?")) {
     const res = NextResponse.next();
     applySecurityHeaders(res);
     return res;
   }
 
+  // Protect other admin routes
   if (pathname.startsWith("/admin")) {
     const session = await auth();
     if (!session || session.user?.role !== "admin") {
@@ -76,6 +82,7 @@ export async function proxy(request: NextRequest) {
     return res;
   }
 
+  // All other routes: just add security headers
   const res = NextResponse.next();
   applySecurityHeaders(res);
   return res;

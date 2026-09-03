@@ -33,7 +33,8 @@ export async function sendContactMessage(data: {
     return { success: false, error: "Missing required fields" };
   }
 
-  await sendEmail({
+  // Send email and check result
+  const emailResult = await sendEmail({
     subject: `New Contact Message – ${data.subject}`,
     html: `
       <h2 style="color:#1e3a8a;">New Message from Website</h2>
@@ -45,6 +46,10 @@ export async function sendContactMessage(data: {
       <p>${data.message}</p>
     `,
   });
+
+  if (!emailResult.success) {
+    return { success: false, error: "Failed to send email. Please try again later." };
+  }
 
   return { success: true };
 }

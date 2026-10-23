@@ -104,8 +104,8 @@ For production environments:
 1. Clone the repository:
 
    ```bash
-   git clone YOUR_REPOSITORY_URL
-   cd YOUR_REPOSITORY_DIRECTORY
+   git clone https://github.com/MaryGrace-lab/st-mary.git
+   cd st-mary
    ```
 
 2. Install dependencies:
@@ -114,13 +114,13 @@ For production environments:
    npm install
    ```
 
-3. Create a local environment file:
+3. Environment Configuration:
 
-   ```bash
-   cp .env.example .env
-   ```
+   Configure the environment variables required by the application before running it locally. These may include database connection
+   settings and credentials for external services.
 
-   If the repository does not include `.env.example`, create the local environment file using the actual variable names expected by the code.
+   Keep all secrets and credentials private. Do not commit environment files containing sensitive values to GitHub.
+
 
 4. Configure the database connection and other required services.
 

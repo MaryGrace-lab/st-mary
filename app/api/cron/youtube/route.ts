@@ -55,7 +55,7 @@ export async function GET(request: Request) {
     await prisma.homily.create({
       data: {
         title: title,
-        description: "Automatically imported from YouTube.",
+        description: "Listen and be blessed.",
         youtubeId: videoId,
         source: "AUTOMATIC",
         publishedAt: new Date(), // Use current time for the website's 30-day filter

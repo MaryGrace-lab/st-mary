@@ -20,17 +20,17 @@ function applySecurityHeaders(response: NextResponse) {
     );
   }
 
-  // Updated Content Security Policy
+
   response.headers.set(
     "Content-Security-Policy",
     [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://universalis.com", 
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https:",
       "font-src 'self'",
-      "connect-src 'self' https:",
-      "media-src 'self' https://*.public.blob.vercel-storage.com",  // ← added
+      "connect-src 'self' https: https://universalis.com",
+      "media-src 'self' https://*.public.blob.vercel-storage.com",
       "frame-ancestors 'none'",
     ].join("; ")
   );

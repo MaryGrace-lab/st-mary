@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BookOpen, Clock } from "lucide-react";
+import { BookOpen } from "lucide-react";
 
 interface ReadingData {
   date: string;
@@ -26,18 +26,19 @@ export default function AutomaticReading() {
     // 1. Set up the global callback function for Universalis
     (window as any).universalisCallback = (data: any) => {
       try {
+        // Universalis sends data as Mass_R1, Mass_Ps, Mass_G, etc.
         setReading({
-          date: data.Universalis_date || new Date().toLocaleDateString(),
-          celebration: data.Universalis_celebration || "Daily Reading",
-          firstReadingTitle: data["Universalis_mass.FirstReading.source"] || "First Reading",
-          firstReadingText: data["Universalis_mass.FirstReading.text"] || "",
-          psalmTitle: data["Universalis_mass.Psalm.source"] || "Responsorial Psalm",
-          psalmText: data["Universalis_mass.Psalm.text"] || "",
-          secondReadingTitle: data["Universalis_mass.SecondReading.source"],
-          secondReadingText: data["Universalis_mass.SecondReading.text"],
-          gospelAcclamation: data["Universalis_mass.GospelAcclamation.text"],
-          gospelTitle: data["Universalis_mass.Gospel.source"] || "Gospel",
-          gospelText: data["Universalis_mass.Gospel.text"] || "",
+          date: data.date || new Date().toLocaleDateString(),
+          celebration: data.day ? data.day.replace(/<[^>]+>/g, '') : "Daily Reading", // Strips HTML tags from the day
+          firstReadingTitle: data.Mass_R1?.source || "First Reading",
+          firstReadingText: data.Mass_R1?.text || "",
+          psalmTitle: data.Mass_Ps?.source || "Responsorial Psalm",
+          psalmText: data.Mass_Ps?.text || "",
+          secondReadingTitle: data.Mass_R2?.source,
+          secondReadingText: data.Mass_R2?.text,
+          gospelAcclamation: data.Mass_G?.heading,
+          gospelTitle: data.Mass_G?.source || "Gospel",
+          gospelText: data.Mass_G?.text || "",
         });
         setLoading(false);
       } catch (err) {
@@ -50,6 +51,8 @@ export default function AutomaticReading() {
     // 2. Generate the dynamic URL for today's date and Nigeria calendar
     const now = new Date();
     const yyyymmdd = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}`;
+    
+    // Correct URL format for Nigeria
     const url = `https://universalis.com/Africa.Nigeria/${yyyymmdd}/jsonpmass.js?callback=universalisCallback`;
 
     // 3. Inject the script
@@ -57,6 +60,7 @@ export default function AutomaticReading() {
     script.src = url;
     script.async = true;
     script.onerror = () => {
+      console.error("Failed to load Universalis script.");
       setError(true);
       setLoading(false);
     };
@@ -92,7 +96,7 @@ export default function AutomaticReading() {
   }
 
   return (
-    <div className="card-premium p-6 md:p-8 flex flex-col h-full">
+    <div className="card-premium p-6 md:p-8 flex flex-col h-full overflow-hidden">
       {/* Header */}
       <div className="flex items-center gap-2 text-blue-900 mb-4">
         <BookOpen className="w-5 h-5 text-gold-500" />
@@ -109,40 +113,55 @@ export default function AutomaticReading() {
         {reading.celebration}
       </span>
 
-      {/* First Reading */}
-      <div className="bg-blue-50/60 rounded-xl p-4 mb-4 border-l-4 border-blue-200 flex-1 overflow-y-auto max-h-40">
-        <p className="text-sm font-semibold text-blue-900 mb-1">
-          {reading.firstReadingTitle}
-        </p>
-        <p className="text-gray-700 text-sm italic leading-relaxed line-clamp-4">
-          {reading.firstReadingText}
-        </p>
-      </div>
+      {/* Scrollable Readings Container */}
+      <div className="flex-1 overflow-y-auto pr-2 space-y-4 max-h-[350px]">
+        {/* First Reading */}
+        <div className="bg-blue-50/60 rounded-xl p-4 border-l-4 border-blue-200">
+          <p className="text-sm font-semibold text-blue-900 mb-1">
+            {reading.firstReadingTitle}
+          </p>
+          <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-line">
+            {reading.firstReadingText}
+          </p>
+        </div>
 
-      {/* Psalm */}
-      <div className="bg-blue-50/60 rounded-xl p-4 mb-4 border-l-4 border-blue-200 flex-1 overflow-y-auto max-h-40">
-        <p className="text-sm font-semibold text-blue-900 mb-1">
-          {reading.psalmTitle}
-        </p>
-        <p className="text-gray-700 text-sm italic leading-relaxed line-clamp-4">
-          {reading.psalmText}
-        </p>
-      </div>
+        {/* Psalm */}
+        <div className="bg-blue-50/60 rounded-xl p-4 border-l-4 border-blue-200">
+          <p className="text-sm font-semibold text-blue-900 mb-1">
+            {reading.psalmTitle}
+          </p>
+          <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-line">
+            {reading.psalmText}
+          </p>
+        </div>
 
-      {/* Gospel */}
-      <div className="bg-blue-50/60 rounded-xl p-4 mb-4 border-l-4 border-blue-200 flex-1 overflow-y-auto max-h-40">
-        <p className="text-sm font-semibold text-blue-900 mb-1">
-          {reading.gospelTitle}
-        </p>
-        <p className="text-gray-700 text-sm italic leading-relaxed line-clamp-4">
-          {reading.gospelText}
-        </p>
+        {/* Second Reading (if applicable) */}
+        {reading.secondReadingText && (
+          <div className="bg-blue-50/60 rounded-xl p-4 border-l-4 border-blue-200">
+            <p className="text-sm font-semibold text-blue-900 mb-1">
+              {reading.secondReadingTitle}
+            </p>
+            <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-line">
+              {reading.secondReadingText}
+            </p>
+          </div>
+        )}
+
+        {/* Gospel */}
+        <div className="bg-blue-50/60 rounded-xl p-4 border-l-4 border-blue-200">
+          <p className="text-sm font-semibold text-blue-900 mb-1">
+            {reading.gospelTitle}
+          </p>
+          <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-line">
+            {reading.gospelText}
+          </p>
+        </div>
       </div>
 
       {/* Footer Actions */}
-      <div className="flex items-center justify-between gap-3 pt-4 border-t border-gray-100 mt-auto">
+      <div className="flex items-center justify-between gap-3 pt-4 border-t border-gray-100 mt-4">
         <a
-          href={`https://universalis.com/africa.nigeria/${new Date().toISOString().slice(0, 10).replace(/-/g, "")}/mass.htm`}
+          href={`https://universalis.com/Africa.Nigeria/${new Date().toISOString().slice(0, 10).replace(/-/g, "")}/mass.htm`}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 text-blue-900 font-semibold text-sm hover:text-gold-500 transition-colors group"

@@ -15,16 +15,9 @@ enum DonationStatus {
   ACKNOWLEDGED
 }
 
-model Homily {
-  id          String   @id @default(uuid())
-  title       String
-  description String?
-  youtubeId   String
-  publishedAt DateTime @default(now())
-  createdAt   DateTime @default(now())
-  featured    Boolean  @default(false)
-
-  @@index([publishedAt])
+enum ContentSource {
+  MANUAL
+  AUTOMATIC
 }
 
 model DailyReading {
@@ -41,10 +34,24 @@ model DailyReading {
   gospelAcclamationVerse String?
   gospel             String
   gospelTitle        String
+  source             ContentSource @default(MANUAL) // New field
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
   @@index([date])
+}
+
+model Homily {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  youtubeId   String   @unique // Added unique constraint
+  publishedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+  featured    Boolean  @default(false)
+  source      ContentSource @default(MANUAL) // New field
+
+  @@index([publishedAt])
 }
 
 enum BookingStatus {

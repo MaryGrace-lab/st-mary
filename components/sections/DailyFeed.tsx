@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import AutomaticReading from "./AutomaticReading";
 
 interface DailyReadingData {
   date: string;
@@ -118,21 +119,22 @@ export default function DailyFeed({
           variants={staggerContainer}
           className="grid grid-cols-1 lg:grid-cols-2 gap-8"
         >
-          {/* ── Today's Reading Card (Redesigned) ── */}
-          <motion.div
-            variants={fadeInUp}
-            className="card-premium overflow-hidden flex flex-col"
-          >
-            <div className="p-6 md:p-8 flex-1 flex flex-col">
-              {/* Header */}
-              <div className="flex items-center gap-2 text-blue-900 mb-4">
-                <BookOpen className="w-5 h-5 text-gold-500" />
-                <span className="text-xs font-bold uppercase tracking-widest">
-                  Today&apos;s Reading
-                </span>
-              </div>
+          {/* ── Today's Reading Card ── */}
+          {readingData ? (
+            // MANUAL READING CARD (Takes Precedence)
+            <motion.div
+              variants={fadeInUp}
+              className="card-premium overflow-hidden flex flex-col"
+            >
+              <div className="p-6 md:p-8 flex-1 flex flex-col">
+                {/* Header */}
+                <div className="flex items-center gap-2 text-blue-900 mb-4">
+                  <BookOpen className="w-5 h-5 text-gold-500" />
+                  <span className="text-xs font-bold uppercase tracking-widest">
+                    Today&apos;s Reading
+                  </span>
+                </div>
 
-              {readingData ? (
                 <>
                   {/* Date and Liturgical Day */}
                   <p className="text-lg md:text-xl font-bold text-blue-900 mb-1">
@@ -172,51 +174,52 @@ export default function DailyFeed({
                     </div>
                   </div>
                 </>
-              ) : (
-                <p className="text-gray-500 text-sm mb-6 flex-1">
-                  Today&apos;s readings have not been posted yet.
-                </p>
-              )}
 
-              {/* Footer actions */}
-              <div className="flex items-center justify-between gap-3 pt-4 border-t border-gray-100">
-                <Link
-                  href="/daily-reading"
-                  className="inline-flex items-center gap-2 text-blue-900 font-semibold text-sm hover:text-gold-500 transition-colors group"
-                >
-                  Continue Reading
-                  <span className="group-hover:translate-x-1 transition-transform">→</span>
-                </Link>
-
-                <div className="flex items-center gap-2 relative">
-                  {/* Bookmark button */}
-                  <button
-                    className={`p-2 rounded-lg transition ${
-                      bookmarked
-                        ? "text-gold-500 bg-gold-50"
-                        : "text-gray-400 hover:text-gold-500 hover:bg-gold-50"
-                    }`}
-                    title="Bookmark"
-                    onClick={() => setBookmarked(!bookmarked)}
+                {/* Footer actions */}
+                <div className="flex items-center justify-between gap-3 pt-4 border-t border-gray-100">
+                  <Link
+                    href="/daily-reading"
+                    className="inline-flex items-center gap-2 text-blue-900 font-semibold text-sm hover:text-gold-500 transition-colors group"
                   >
-                    <Bookmark
-                      className="w-4 h-4"
-                      fill={bookmarked ? "currentColor" : "none"}
-                    />
-                  </button>
+                    Continue Reading
+                    <span className="group-hover:translate-x-1 transition-transform">→</span>
+                  </Link>
 
-                  {/* Share button (opens popover) */}
-                  <button
-                    className="p-2 rounded-lg text-gray-400 hover:text-gold-500 hover:bg-gold-50 transition"
-                    title="Share reading"
-                    onClick={() => setShareOpen(true)}
-                  >
-                    <Share2 className="w-4 h-4" />
-                  </button>
+                  <div className="flex items-center gap-2 relative">
+                    {/* Bookmark button */}
+                    <button
+                      className={`p-2 rounded-lg transition ${
+                        bookmarked
+                          ? "text-gold-500 bg-gold-50"
+                          : "text-gray-400 hover:text-gold-500 hover:bg-gold-50"
+                      }`}
+                      title="Bookmark"
+                      onClick={() => setBookmarked(!bookmarked)}
+                    >
+                      <Bookmark
+                        className="w-4 h-4"
+                        fill={bookmarked ? "currentColor" : "none"}
+                      />
+                    </button>
+
+                    {/* Share button (opens popover) */}
+                    <button
+                      className="p-2 rounded-lg text-gray-400 hover:text-gold-500 hover:bg-gold-50 transition"
+                      title="Share reading"
+                      onClick={() => setShareOpen(true)}
+                    >
+                      <Share2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          ) : (
+            // AUTOMATIC READING CARD (Fallback to Universalis)
+            <motion.div variants={fadeInUp} className="h-full">
+              <AutomaticReading />
+            </motion.div>
+          )}
 
           {/* ── Today's Homily Card ── */}
           <motion.div
